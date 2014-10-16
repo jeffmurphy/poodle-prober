@@ -41,9 +41,10 @@ def main():
 		help("-n required")
 
 	ip = IPy.IP(network)
+	if ip.prefixlen() != 32 and (ip.broadcast() == x or ip.net() == x):
+		continue
+
 	for x in ip:
-		if ip.prefixlen() != 32 and (ip.broadcast() == x or ip.net() == x):
-			continue
 		sslv3 = check_sslv3(x, port)
 		if no_tlsv1 == True:
 			tlsv1 = check_tls(x, port)

@@ -10,21 +10,31 @@ jcmurphy@buffalo.edu
 import socket, ssl, pprint, sys, IPy, getopt
 
 def help(m=""):
-	print("sslv3check.py [-p port,port,...] -n <network/mask> [-t]")
+	print("sslv3check.py [-p port,port,...] [-n <network/mask> OR -H hostname] [-t]")
 	print("   -p port to connect to (default=443)")
 	print("   -t check if SSLv3 is enabled and TLSv1 is not enabled")
 	print("      otherwise just see if SSLv3 is enabled")
 	print(m)
 	sys.exit(2)
 
+def print_results(host, port, sslv3, tlsv1):
+	if tlsv1 is None:
+		print("{0}:{1} SSLv3 {2}".format(str(host), port, sslv3))
+		return
+
+	if sslv3 == "enabled" and tlsv1 != "enabled":
+		print("{0}:{1} SSLv3 enabled and TLSv1 not enabled".format(str(host), port))
+	else:
+		print("{0}:{1} SSLv3={2} TLSv1={3}".format(str(host), port, sslv3, tlsv1))
+
 def main():
 	port = "443"
 	try:
-		opts, args = getopt.getopt(sys.argv[1:], "hp:n:t")
+		opts, args = getopt.getopt(sys.argv[1:], "hp:n:H:t")
 	except getopt.GetoptError:
 		help()
 
-	network = None
+	network = host = tlsv1 = None
 	no_tlsv1 = False
 
 	for opt, arg in opts:
@@ -36,9 +46,20 @@ def main():
 			port = arg
 		elif opt == '-t':
 			no_tlsv1 = True
+		elif opt == '-H':
+			host = arg
 	
-	if network == None:
-		help("-n required")
+	if network == None and host == None:
+		help("-n or -H required")
+
+	if host is not None:
+		for p in port.split(","):
+			sslv3 = check_sslv3(host, p)
+			if no_tlsv1 == True:
+				tlsv1 = check_tls(host, p)
+			print_results(host, p, sslv3, tlsv1)
+		return
+
 
 	ip = IPy.IP(network)
 
@@ -49,12 +70,7 @@ def main():
 			sslv3 = check_sslv3(x, p)
 			if no_tlsv1 == True:
 				tlsv1 = check_tls(x, p)
-				if sslv3 == "enabled" and tlsv1 != "enabled":
-					print("{0}:{1} SSLv3 enabled and TLSv1 not enabled".format(str(x), p))
-				else:
-					print("{0}:{1} SSLv3={2} TLSv1={3}".format(str(x), p, sslv3, tlsv1))
-			else:
-				print("{0}:{1} SSLv3 {2}".format(str(x), p, sslv3))
+			print_results(x, p, sslv3, tlsv1)
 
 
 def check_tls(h, p):

@@ -20,7 +20,7 @@ or, if that's not available
 # Usage
 
 ```
-sslv3check.py [-p port,port,...] -n <network/mask> [-t]
+sslv3check.py [-p port,port,...] [-n <network/mask> OR -H <hostname>] [-t]
     -p port to connect to (default=443)
     -t check if SSLv3 is enabled and TLSv1 is not enabled
        otherwise just see if SSLv3 is enabled
@@ -56,6 +56,15 @@ $ python3 sslv3check.py -p 443,444 -n 10.0.1.1
 10.0.1.1:444 SSLv3 enabled
 ```
 
+Check a host by name:
+
+```
+$ python3 sslv3check.py -H www.example.com
+www.example.com:443 SSLv3 [SSL: SSLV3_ALERT_HANDSHAKE_FAILURE] sslv3 alert handshake failure (_ssl.c:598)
+```
+
 # Props
 
 To Kohster for the name and the "TLSv1 disabled" feature suggestion!
+To Kim C for the suggestion that multiple ports be a command line option.
+To Ross V for a patch implementing -H <hostname>

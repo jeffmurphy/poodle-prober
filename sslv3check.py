@@ -17,6 +17,8 @@ context.load_default_certs()
 
 ip = IPy.IP(sys.argv[1])
 for x in ip:
+        if ip.broadcast() == x or ip.net() == x:
+                continue
         try:
                 s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
                 s.settimeout(1)

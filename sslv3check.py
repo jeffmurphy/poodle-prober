@@ -11,7 +11,8 @@ import socket, ssl, pprint, sys, IPy, getopt
 port = 443
 
 def help(m=""):
-	print("sslv3check.py -n <network/mask> [-t]")
+	print("sslv3check.py [-p port] -n <network/mask> [-t]")
+	print("   -p port to connect to (default=443)")
 	print("   -t check if SSLv3 is enabled and TLSv1 is not enabled")
 	print("      otherwise just see if SSLv3 is enabled")
 	print(m)
@@ -19,7 +20,7 @@ def help(m=""):
 
 def main():
 	try:
-		opts, args = getopt.getopt(sys.argv[1:], "hn:t")
+		opts, args = getopt.getopt(sys.argv[1:], "hp:n:t")
 	except getopt.GetoptError:
 		help()
 
@@ -31,6 +32,8 @@ def main():
 			help()
 		elif opt == '-n':
 			network = arg
+		elif opt == '-p':
+			port = int(arg)
 		elif opt == '-t':
 			no_tlsv1 = True
 	

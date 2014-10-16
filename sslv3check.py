@@ -46,15 +46,10 @@ def main():
 			tlsv1 = check_tls(x, port)
 			if sslv3 == "enabled" and tlsv1 != "enabled":
 				print("{0} SSLv3 enabled and TLSv1 not enabled".format(str(x)))
-			elif sslv3 == "enabled" and tlsv1 == "enabled":
-				print("{0} SSLv3 enabled and TLSv1 enabled".format(str(x)))
 			else:
 				print("{0} SSLv3={1} TLSv1={2}".format(str(x), sslv3, tlsv1))
 		else:
-			if sslv3 == "enabled":
-				print("{0} SSLv3 enabled".format(str(x)))
-			else:
-				print("{0} SSLv3 {1}".format(str(x), sslv3))
+			print("{0} SSLv3 {1}".format(str(x), sslv3))
 
 
 def check_tls(h, p):

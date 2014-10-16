@@ -11,7 +11,7 @@ import socket, ssl, pprint, sys, IPy, getopt
 port = 443
 
 def help(m=""):
-	print("sslv3check.py [-p port] -n <network/mask> [-t]")
+	print("sslv3check.py [-p port,port,...] -n <network/mask> [-t]")
 	print("   -p port to connect to (default=443)")
 	print("   -t check if SSLv3 is enabled and TLSv1 is not enabled")
 	print("      otherwise just see if SSLv3 is enabled")
@@ -33,7 +33,7 @@ def main():
 		elif opt == '-n':
 			network = arg
 		elif opt == '-p':
-			port = int(arg)
+			port = arg
 		elif opt == '-t':
 			no_tlsv1 = True
 	
@@ -45,15 +45,18 @@ def main():
 		continue
 
 	for x in ip:
-		sslv3 = check_sslv3(x, port)
-		if no_tlsv1 == True:
-			tlsv1 = check_tls(x, port)
-			if sslv3 == "enabled" and tlsv1 != "enabled":
-				print("{0} SSLv3 enabled and TLSv1 not enabled".format(str(x)))
+		if ip.prefixlen() != 32 and (ip.broadcast() == x or ip.net() == x):
+			continue
+		for p in port.split(","):
+			sslv3 = check_sslv3(x, p)
+			if no_tlsv1 == True:
+				tlsv1 = check_tls(x, p)
+				if sslv3 == "enabled" and tlsv1 != "enabled":
+					print("{0}:{1} SSLv3 enabled and TLSv1 not enabled".format(str(x), p))
+				else:
+					print("{0}:{1} SSLv3={2} TLSv1={3}".format(str(x), p, sslv3, tlsv1))
 			else:
-				print("{0} SSLv3={1} TLSv1={2}".format(str(x), sslv3, tlsv1))
-		else:
-			print("{0} SSLv3 {1}".format(str(x), sslv3))
+				print("{0}:{1} SSLv3 {2}".format(str(x), p, sslv3))
 
 
 def check_tls(h, p):
@@ -72,7 +75,7 @@ def check(h, p, ctx):
 		s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 		s.settimeout(1)
 		ssl_sock = context.wrap_socket(s, server_hostname=str(h), do_handshake_on_connect=True)
-		ssl_sock.connect((str(h), p))
+		ssl_sock.connect((str(h), int(p)))
 		ssl_sock.close()
 		return "enabled"
 	except Exception as e:

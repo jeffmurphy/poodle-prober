@@ -19,6 +19,13 @@ or, if that's not available
 
 # Usage
 
+```
+sslv3check.py [-p port] -n <network/mask> [-t]
+    -p port to connect to (default=443)
+    -t check if SSLv3 is enabled and TLSv1 is not enabled
+       otherwise just see if SSLv3 is enabled
+```
+
 Just look for anyone with SSLv3 turned on:
 
 ```
@@ -51,4 +58,3 @@ $ python3 sslv3check.py -n 10.0.1.1
 # Props
 
 To Kohster for the name and the "TLSv1 disabled" feature suggestion!
-

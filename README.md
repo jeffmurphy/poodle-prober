@@ -65,6 +65,6 @@ www.example.com:443 SSLv3 [SSL: SSLV3_ALERT_HANDSHAKE_FAILURE] sslv3 alert hands
 
 # Props
 
-To Kohster for the name and the "TLSv1 disabled" feature suggestion!
-To Kim C for the suggestion that multiple ports be a command line option.
-To Ross V for a patch implementing -H <hostname>
+- To Kohster for the name and the "TLSv1 disabled" feature suggestion!
+- To Kim C for the suggestion that multiple ports be a command line option.
+- To Ross V for a patch implementing -H <hostname>

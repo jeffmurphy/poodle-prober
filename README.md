@@ -20,7 +20,7 @@ or, if that's not available
 # Usage
 
 ```
-sslv3check.py [-p port] -n <network/mask> [-t]
+sslv3check.py [-p port,port,...] -n <network/mask> [-t]
     -p port to connect to (default=443)
     -t check if SSLv3 is enabled and TLSv1 is not enabled
        otherwise just see if SSLv3 is enabled
@@ -30,29 +30,30 @@ Just look for anyone with SSLv3 turned on:
 
 ```
 $ python3 sslv3check.py -n 10.0.1.0/24
-10.0.1.1 SSLv3 [SSL: SSLV3_ALERT_HANDSHAKE_FAILURE] sslv3 alert handshake failure (_ssl.c:598)
-10.0.1.2 SSLv3 timed out
-10.0.1.3 SSLv3 timed out
-10.0.1.4 SSLv3 enabled
-10.0.1.5 SSLv3 enabled
+10.0.1.1:443 SSLv3 [SSL: SSLV3_ALERT_HANDSHAKE_FAILURE] sslv3 alert handshake failure (_ssl.c:598)
+10.0.1.2:443 SSLv3 timed out
+10.0.1.3:443 SSLv3 timed out
+10.0.1.4:443 SSLv3 enabled
+10.0.1.5:443 SSLv3 enabled
 ```
 
 Look for things with SSLv3 turned on and TLSv1 turned off:
 
 ```
 $ python3 sslv3check.py -n 10.0.1.0/24 -t
-10.0.1.1 SSLv3 [SSL: SSLV3_ALERT_HANDSHAKE_FAILURE] sslv3 alert handshake failure (_ssl.c:598) TLSv1 enabled
-10.0.1.2 SSLv3 timed out TLSv1 timed out
-10.0.1.3 SSLv3 timed out TLSv1 timed out
-10.0.1.4 SSLv3 enabled TLSv1 not enabled
-10.0.1.5 SSLv3 enabled TLSv1 enabled
+10.0.1.1:443 SSLv3 [SSL: SSLV3_ALERT_HANDSHAKE_FAILURE] sslv3 alert handshake failure (_ssl.c:598) TLSv1 enabled
+10.0.1.2:443 SSLv3 timed out TLSv1 timed out
+10.0.1.3:443 SSLv3 timed out TLSv1 timed out
+10.0.1.4:443 SSLv3 enabled TLSv1 not enabled
+10.0.1.5:443 SSLv3 enabled TLSv1 enabled
 ```
 
 Just check one host:
 
 ```
-$ python3 sslv3check.py -n 10.0.1.1
-10.0.1.1 SSLv3 [SSL: SSLV3_ALERT_HANDSHAKE_FAILURE] sslv3 alert handshake failure (_ssl.c:598)
+$ python3 sslv3check.py -p 443,444 -n 10.0.1.1
+10.0.1.1:443 SSLv3 [SSL: SSLV3_ALERT_HANDSHAKE_FAILURE] sslv3 alert handshake failure (_ssl.c:598)
+10.0.1.1:444 SSLv3 enabled
 ```
 
 # Props

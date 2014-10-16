@@ -8,7 +8,6 @@ python3 sslcheck.py 10.0.1.0/24
 jcmurphy@buffalo.edu
 """
 import socket, ssl, pprint, sys, IPy, getopt
-port = 443
 
 def help(m=""):
 	print("sslv3check.py [-p port,port,...] -n <network/mask> [-t]")
@@ -19,6 +18,7 @@ def help(m=""):
 	sys.exit(2)
 
 def main():
+	port = "443"
 	try:
 		opts, args = getopt.getopt(sys.argv[1:], "hp:n:t")
 	except getopt.GetoptError:

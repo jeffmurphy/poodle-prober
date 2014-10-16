@@ -50,5 +50,5 @@ $ python3 sslv3check.py -n 10.0.1.1
 
 # Props
 
-To Kohster for the name and the "TLSv1 disable" feature suggestion!
+To Kohster for the name and the "TLSv1 disabled" feature suggestion!
 

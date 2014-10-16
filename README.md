@@ -27,10 +27,17 @@ $ python3 sslv3check.py -n 10.0.1.0/24
 Look for things with SSLv3 turned on and TLSv1 turned off:
 
 ```
-$ python3 sslv3check.py -n 10.0.1.0/24
+$ python3 sslv3check.py -n 10.0.1.0/24 -t
 10.0.1.1 SSLv3 [SSL: SSLV3_ALERT_HANDSHAKE_FAILURE] sslv3 alert handshake failure (_ssl.c:598) TLSv1 enabled
 10.0.1.2 SSLv3 timed out TLSv1 timed out
 10.0.1.3 SSLv3 timed out TLSv1 timed out
 10.0.1.4 SSLv3 enabled TLSv1 not enabled
 10.0.1.5 SSLv3 enabled TLSv1 enabled
+```
+
+Just check one host:
+
+```
+$ python3 sslv3check.py -n 10.0.1.1
+10.0.1.1 SSLv3 [SSL: SSLV3_ALERT_HANDSHAKE_FAILURE] sslv3 alert handshake failure (_ssl.c:598)
 ```

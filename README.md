@@ -1,6 +1,8 @@
-# POODLE Checker
+# POODLE Prober
 
-Scan a netblock for SSLv3 enabled servers
+Probe your poodle. Just to be safe.
+
+Scan a netblock for SSLv3 enabled servers.
 
 # Setup
 

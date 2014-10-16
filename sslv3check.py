@@ -66,8 +66,6 @@ def check_sslv3(h, p):
 def check(h, p, ctx):
 	context = ssl.SSLContext(ctx)
 	context.verify_mode = ssl.CERT_NONE
-	context.check_hostname = False
-	context.load_default_certs()
 
 	try:
 		s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)

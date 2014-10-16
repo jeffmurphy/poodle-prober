@@ -41,8 +41,6 @@ def main():
 		help("-n required")
 
 	ip = IPy.IP(network)
-	if ip.prefixlen() != 32 and (ip.broadcast() == x or ip.net() == x):
-		continue
 
 	for x in ip:
 		if ip.prefixlen() != 32 and (ip.broadcast() == x or ip.net() == x):

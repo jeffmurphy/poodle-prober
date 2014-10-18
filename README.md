@@ -20,7 +20,7 @@ or, if that's not available
 # Usage
 
 ```
-sslv3check.py [-p port,port,...] [-n <network/mask> OR -H <hostname>] [-t]
+sslv3check.py [-p port port ...] [-n <network/mask> <network/mask> ... OR -H <hostname> <hostname> ...] [-t]
     -p port to connect to (default=443)
     -t check if SSLv3 is enabled and TLSv1 is not enabled
        otherwise just see if SSLv3 is enabled
@@ -51,7 +51,7 @@ $ python3 sslv3check.py -n 10.0.1.0/24 -t
 Just check one host:
 
 ```
-$ python3 sslv3check.py -p 443,444 -n 10.0.1.1
+$ python3 sslv3check.py -p 443 444 -n 10.0.1.1
 10.0.1.1:443 SSLv3 [SSL: SSLV3_ALERT_HANDSHAKE_FAILURE] sslv3 alert handshake failure (_ssl.c:598)
 10.0.1.1:444 SSLv3 enabled
 ```

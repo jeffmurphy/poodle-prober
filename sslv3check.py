@@ -11,8 +11,9 @@ import socket, ssl, pprint, sys, IPy, argparse
 
 parser = argparse.ArgumentParser(description='Scan a netblock for SSLv3 enabled servers on port 443')
 parser.add_argument('--port', '-p', nargs='*', default="443", help='port to connect to (default=443)')
-parser.add_argument('--network', '-n', nargs='*', default=None, help='<network/mask>')
-parser.add_argument('--host', '-H', nargs='*', default=None, help='hostname')
+group = parser.add_mutually_exclusive_group(required=True)
+group.add_argument('--network', '-n', nargs='*', default=None, help='<network/mask>')
+group.add_argument('--host', '-H', nargs='*', default=None, help='hostname')
 parser.add_argument('--tls', '-t', action='store_true', default=False, help='check if SSLv4 is enabled and TLSv1 is not enabled\n otherwise just see if SSLv3 is enabled')
 
 
@@ -33,9 +34,6 @@ def main():
     network = host = tlsv1 = None
     no_tlsv1 = False
 
-    if args["network"] == None and host == None:
-            help("-n or -H required")
-
     if args["host"] is not None:
         for host in args["host"]:
             for p in args["port"]:
@@ -55,8 +53,8 @@ def main():
                 continue
             for p in args["port"]:
                 sslv3 = check_sslv3(x, p)
-                if no_tlsv1 == True:
-                        tlsv1 = check_tls(x, p)
+                if tls == True:
+                    tlsv1 = check_tls(x, p)
                 print_results(x, p, sslv3, tlsv1)
 
 

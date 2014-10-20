@@ -20,10 +20,11 @@ or, if that's not available
 # Usage
 
 ```
-sslv3check.py [-p port port ...] [-n <network/mask> <network/mask> ... OR -H <hostname> <hostname> ...] [-t]
+sslv3check.py [-p port port ...] [-n <network/mask> <network/mask> ... OR -H <hostname> <hostname> ...] [-t] [-P]
     -p port to connect to (default=443)
     -t check if SSLv3 is enabled and TLSv1 is not enabled
        otherwise just see if SSLv3 is enabled
+    -P run checks on networks in parallel
 ```
 
 Just look for anyone with SSLv3 turned on:
@@ -61,6 +62,18 @@ Check a host by name:
 ```
 $ python3 sslv3check.py -H www.example.com
 www.example.com:443 SSLv3 [SSL: SSLV3_ALERT_HANDSHAKE_FAILURE] sslv3 alert handshake failure (_ssl.c:598)
+```
+
+Scan multiple networks in parallel:
+
+```
+$ python3 sslv3check.py -n 10.0.1.0/24 10.1.0.0/24 -P
+10.1.0.1:443 SSLv3 timed out
+10.0.1.1:443 SSLv3 timed out
+10.1.0.2:443 SSLv3 timed out
+10.0.1.2:443 SSLv3 enabled
+10.1.0.3:443 SSLv3 timed out
+10.0.1.3:443 SSLv3 timed out
 ```
 
 # Props

@@ -7,7 +7,7 @@ python3 sslcheck.py 10.0.1.0/24
 
 jcmurphy@buffalo.edu
 """
-import socket, ssl, pprint, sys, IPy, argparse
+import socket, ssl, pprint, sys, IPy, argparse, multiprocessing
 
 parser = argparse.ArgumentParser(description='Scan a netblock for SSLv3 enabled servers on port 443')
 parser.add_argument('--port', '-p', nargs='*', default=["443"], help='port to connect to (default=443)')
@@ -15,6 +15,7 @@ group = parser.add_mutually_exclusive_group(required=True)
 group.add_argument('--network', '-n', nargs='*', default=None, help='<network/mask>')
 group.add_argument('--host', '-H', nargs='*', default=None, help='hostname')
 parser.add_argument('--tls', '-t', action='store_true', default=False, help='check if SSLv3 is enabled and TLSv1 is not enabled\n otherwise just see if SSLv3 is enabled')
+parser.add_argument('--parallel', '-P', action='store_true', default=False, help='Process netblocks in parallel')
 
 
 def print_results(host, port, sslv3, tlsv1):
@@ -50,19 +51,40 @@ def main():
         return
 
     net = IPy.IPSet()
+
     for network in args["network"]:
         net.add(IPy.IP(network))
 
-    for ip in net:
-        for x in ip:
-            if ip.prefixlen() != 32 and (ip.broadcast() == x or ip.net() == x):
-                continue
-            for p in args["port"]:
-                sslv3 = check_sslv3(x, p)
-                if args["tls"] == True:
-                    tlsv1 = check_tls(x, p)
-                print_results(x, p, sslv3, tlsv1)
+    if args["parallel"]:
+        p = multiprocessing.Pool()
+        q = multiprocessing.Queue()
 
+        for ip in net:
+            q.put((check_net, ip, args["port"], args["tls"]))
+
+        while True:
+            items = q.get()
+            func = items[0]
+            args = items[1:]
+            p.apply_async(func, args)
+            if q.empty():
+                p.close()
+                p.join()
+                break
+    else:
+        for ip in net:
+            check_net(ip, args["port"], args["tls"])
+
+def check_net(ip, ports, tls):
+    for x in ip:
+        if ip.prefixlen() != 32 and (ip.broadcast() == x or ip.net() == x):
+            continue
+        for p in ports:
+            tlsv1 = None
+            sslv3 = check_sslv3(x, p)
+            if tls == True:
+                tlsv1 = check_tls(x, p)
+            print_results(x, p, sslv3, tlsv1)
 
 def check_tls(h, p):
     return check(h, p, ssl.PROTOCOL_TLSv1)

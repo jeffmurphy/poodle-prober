@@ -31,6 +31,13 @@ def main():
     args = parser.parse_args()
     args = vars(args)
 
+    ports = []
+    for port in args["port"]:
+        for port in port.split(','):
+            ports.append(port)
+
+    args["port"] = ports
+
     tlsv1 = None
 
     if args["host"] is not None:

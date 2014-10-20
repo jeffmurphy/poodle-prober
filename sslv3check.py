@@ -15,6 +15,7 @@ group = parser.add_mutually_exclusive_group(required=True)
 group.add_argument('--network', '-n', nargs='*', default=None, help='<network/mask>')
 group.add_argument('--host', '-H', nargs='*', default=None, help='hostname')
 parser.add_argument('--tls', '-t', action='store_true', default=False, help='check if SSLv3 is enabled and TLSv1 is not enabled\n otherwise just see if SSLv3 is enabled')
+parser.add_argument('--parallel', '-P', action='store_true', default=False, help='Process netblocks in parallel')
 
 
 def print_results(host, port, sslv3, tlsv1):
@@ -43,25 +44,29 @@ def main():
         return
 
     net = IPy.IPSet()
-    
-    p = multiprocessing.Pool()
-    q = multiprocessing.Queue()
 
     for network in args["network"]:
         net.add(IPy.IP(network))
 
-    for ip in net:
-        q.put((check_net, ip, args["port"], args["tls"]))
+    if args["parallel"]:
+        p = multiprocessing.Pool()
+        q = multiprocessing.Queue()
 
-    while True:
-        items = q.get()
-        func = items[0]
-        args = items[1:]
-        p.apply_async(func, args)
-        if q.empty():
-            p.close()
-            p.join()
-            break
+        for ip in net:
+            q.put((check_net, ip, args["port"], args["tls"]))
+
+        while True:
+            items = q.get()
+            func = items[0]
+            args = items[1:]
+            p.apply_async(func, args)
+            if q.empty():
+                p.close()
+                p.join()
+                break
+    else:
+        for ip in net:
+            check_net(ip, args["port"], args["tls"])
 
 def check_net(ip, ports, tls):
     for x in ip:

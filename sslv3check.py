@@ -7,7 +7,7 @@ python3 sslcheck.py 10.0.1.0/24
 
 jcmurphy@buffalo.edu
 """
-import socket, ssl, pprint, sys, IPy, argparse
+import socket, ssl, pprint, sys, IPy, argparse, multiprocessing
 
 parser = argparse.ArgumentParser(description='Scan a netblock for SSLv3 enabled servers on port 443')
 parser.add_argument('--port', '-p', nargs='*', default=["443"], help='port to connect to (default=443)')
@@ -43,19 +43,32 @@ def main():
         return
 
     net = IPy.IPSet()
+    
+    p = multiprocessing.Pool()
+    q = multiprocessing.Queue()
+
     for network in args["network"]:
         net.add(IPy.IP(network))
 
     for ip in net:
-        for x in ip:
-            if ip.prefixlen() != 32 and (ip.broadcast() == x or ip.net() == x):
-                continue
-            for p in args["port"]:
-                sslv3 = check_sslv3(x, p)
-                if args["tls"] == True:
-                    tlsv1 = check_tls(x, p)
-                print_results(x, p, sslv3, tlsv1)
+        q.put((check_net, ip, args["port"], args["tls"]))
 
+    while True:
+        items = q.get()
+        func = items[0]
+        args = items[1:]
+        p.apply_async(func, args)
+
+def check_net(ip, ports, tls):
+    for x in ip:
+        if ip.prefixlen() != 32 and (ip.broadcast() == x or ip.net() == x):
+            continue
+        for p in ports:
+            tlsv1 = None
+            sslv3 = check_sslv3(x, p)
+            if tls == True:
+                tlsv1 = check_tls(x, p)
+            print_results(x, p, sslv3, tlsv1)
 
 def check_tls(h, p):
     return check(h, p, ssl.PROTOCOL_TLSv1)

@@ -58,6 +58,10 @@ def main():
         func = items[0]
         args = items[1:]
         p.apply_async(func, args)
+        if q.empty():
+            p.close()
+            p.join()
+            break
 
 def check_net(ip, ports, tls):
     for x in ip:
